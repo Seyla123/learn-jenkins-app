@@ -39,7 +39,7 @@ pipeline {
         stage('E2E Test') {
             agent {
                 docker {
-                    image 'mcr.microsoft.com/playwright:v1.48.1-noble'
+                    image 'mcr.microsoft.com/playwright:v1.48.1-jammy'
                     reuseNode true
                 }
             }
@@ -51,20 +51,20 @@ pipeline {
                 '''
             }
         }
-        stage('Deploy') {
-            agent {
-                docker {
-                    image 'node:18-alpine'
-                    reuseNode true
-                }
-            }
-            steps {
-                sh '''
-                    npm install netlify-cli
-                    ./node_modules/.bin/netlify --version
-                '''
-            }
-        }
+        // stage('Deploy') {
+        //     agent {
+        //         docker {
+        //             image 'node:18-alpine'
+        //             reuseNode true
+        //         }
+        //     }
+        //     steps {
+        //         sh '''
+        //             npm install netlify-cli
+        //             ./node_modules/.bin/netlify --version
+        //         '''
+        //     }
+        // }
     }
 
     post {

@@ -88,7 +88,7 @@ pipeline {
                     
                 '''
                 scripts {
-                    env.CI_ENVIRONMENT_URL = sh(scripts: "./node_modules/.bin/node-jq '.deploy_url' deploy-output.json", returnStdout: true)
+                    env.STAGING_URL = sh(scripts: "./node_modules/.bin/node-jq '.deploy_url' deploy-output.json", returnStdout: true)
                 }
             }
         }
@@ -100,7 +100,7 @@ pipeline {
                 }
             }
             environment {
-                CI_ENVIRONMENT_URL = 'FIXME'
+                CI_ENVIRONMENT_URL = "${env.STAGING_URL}"
             }
             steps {
                 sh '''

@@ -10,6 +10,7 @@ pipeline {
                 }
             }
             steps {
+                cleanWs()
                 sh ''' 
                     ls -la 
                     node --version
@@ -46,7 +47,7 @@ pipeline {
             steps {
                 sh '''
                     npm install serve
-                    node_modules/serve -s build &
+                    node_modules/.bin/serve -s build &
                     sleep 10
                     npx playwright test
                 '''

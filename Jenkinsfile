@@ -80,17 +80,38 @@ pipeline {
             }
             steps {
                 sh '''
-                    npm install netlify-cli
+                    npm install netlify-cli node-jq
                     ./node_modules/.bin/netlify --version
                     echo "Deploying to production. Site ID: $NETLIFY_SITE_ID" 
                     ./node_modules/.bin/netlify status
-                    ./node_modules/.bin/netlify deploy --dir=build
+                    ./node_modules/.bin/netlify deploy --dir=build --json > deploy-output.json
                 '''
+            }
+        }
+        stage('staging E2E') {
+            agent {
+                docker {
+                    image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
+                    reuseNode true
+                }
+            }
+            environment {
+                CI_ENVIRONMENT_URL = 'FIXME'
+            }
+            steps {
+                sh '''
+                    npx playwright test --reporter=html
+                '''
+            }
+            post {
+                always {
+                    publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'HTML Staging E2E', reportTitles: 'Seyla Playwright Staging E2E.', useWrapperFileDirectly: true])
+                }
             }
         }
         stage('Approval') {
             steps {
-                timeout(1){
+                timeout(15){
                     input message: 'Ready to deploy to production?', ok: 'Yes, I am ready to deploy to production!'
                 }
             }

@@ -84,8 +84,12 @@ pipeline {
                     ./node_modules/.bin/netlify --version
                     echo "Deploying to production. Site ID: $NETLIFY_SITE_ID" 
                     ./node_modules/.bin/netlify status
-                    ./node_modules/.bin/netlify deploy --dir=build --json 
+                    ./node_modules/.bin/netlify deploy --dir=build --json > deploy-output.json
+                    
                 '''
+                scripts {
+                    env.CI_ENVIRONMENT_URL = sh(scripts: "./node_modules/.bin/node-jq '.deploy_url' deploy-output.json", returnStdout: true)
+                }
             }
         }
         stage('staging E2E') {
